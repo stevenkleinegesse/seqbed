@@ -58,6 +58,7 @@ def MEstimator(samples):
         Array of values over which to compute the robust mean.
     """
 
+    # Find the roots of the non-linear equation
     mu = np.mean(samples)
     data_opt = sco.root(Root, mu, args=samples, tol=1e-14, method="broyden1")
 

@@ -202,8 +202,6 @@ class SequentialBED:
             u = -self.utilobj.compute(
                 d, numsamp=10 * len(self.prior_samples), evaltype=self.evaltype
             )
-            # u = - self.utilobj.compute(
-            # d, numsamp=10*len(self.prior_samples), evaltype='robust')
         elif self.utiltype == "Precision":
             u = -self.utilobj.compute(
                 d[0],
@@ -277,7 +275,6 @@ class SequentialBED:
                         nsamples=len(self.prior_samples),
                         bounds=bounds,
                     )
-                    print("Flag End")
                     self.prior_samples = pp_new
                     self.utilobj.prior_samples = pp_new
                     self.weights = ww_new
@@ -343,7 +340,7 @@ class SequentialBED:
             # Take some real-world data at optimum
             if obs_file is None:
                 y_obs = self.simobj.observe(d_opt)[0]
-            else:  # ONLY WORKS FOR SEQUENTIAL DESIGN FOR NOW - NOT non-myopic
+            else:  # ONLY WORKS FOR SEQUENTIAL DESIGN FOR NOW - NOT NON-MYOPIC
                 obs_data = np.load("{}_iter{}.npz".format(obs_file, n))
                 dd, yy = obs_data.f.dd, obs_data.f.yy
                 tmin = np.abs(dd - d_opt)
@@ -359,7 +356,6 @@ class SequentialBED:
 
                 # Compute final utility value
                 u_final = robust.MEstimator(np.log(r_obs))
-                # u_final = self.bo_obj.model.predict(d_opt)[0][0][0]
 
                 self.savedata = {
                     "d_opt": d_opt,
@@ -390,7 +386,8 @@ class SequentialBED:
                 ww_post_norm = ww_post / np.sum(ww_post)
                 pp_post = list()
                 for _ in range(len(self.prior_samples)):
-                    cat = np.random.choice(range(len(ww_post_norm)), p=ww_post_norm)
+                    cat = np.random.choice(
+                        range(len(ww_post_norm)), p=ww_post_norm)
                     pp_post.append(self.prior_samples[cat])
                 pp_post = np.array(pp_post)
 

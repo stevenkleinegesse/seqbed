@@ -39,7 +39,7 @@ class Simulator:
 
         """
         Computes the summary statistics of the provided data. Default is
-        simply powers from 1 to 4 of the data values; this is only applicable
+        simply powers from 1 to 3 of the data values; this is only applicable
         to scalars.
 
         Parameters
@@ -50,7 +50,6 @@ class Simulator:
 
         Y_psi = list()
         for y in Y:
-            # could change 5 to any kind of degree
             Y_psi.append([y ** i for i in range(1, 4)])
         return np.array(Y_psi)
 
@@ -163,10 +162,8 @@ class DeathModel(Simulator):
         Y_psi = list()
         for arr in Y:
             if np.array(arr).shape == ():
-                # tmp = [arr, 0]
                 tmp = [arr ** i for i in range(1, 4)]
             else:
-                # tmp = [arr[0], 0]
                 tmp = [arr[0] ** i for i in range(1, 4)]
             Y_psi.append(tmp)
         return np.array(Y_psi)
@@ -184,7 +181,7 @@ class DeathModel(Simulator):
             Model parameters for which to simulate data.
         """
 
-        inf_num = np.random.binomial(self.S0, 1 - np.exp(-b * t))
+        inf_num = np.random.binomial(self.S0, 1 - np.exp(-p * d))
         return inf_num
 
 
@@ -261,20 +258,19 @@ class DeathModelMultiple(Simulator):
             Model parameters for which to simulate data.
         """
 
-        inf_prob = lambda b, t: 1 - np.exp(-b * t)
-
         infected = list()
         d0 = 0
         I0 = 0
         if isinstance(d, float):
-            inf_num = np.random.binomial(self.S0 - I0, inf_prob(p, d - d0))
+            inf_num = np.random.binomial(
+                self.S0 - I0, 1 - np.exp(-p * d))
             infected.append(inf_num)
         else:
             for idx in range(len(d)):
                 if d[idx] < d0:
                     raise ValueError("You can't go backwards in time!")
                 inf_num = I0 + np.random.binomial(
-                    self.S0 - I0, inf_prob(p, d[idx] - d0)
+                    self.S0 - I0, 1 - np.exp(-p * (d[idx] - d0))
                 )
                 infected.append(inf_num)
                 d0 = d[idx]
@@ -366,13 +362,7 @@ class SIRModel(Simulator):
                         I ** 3,
                     ]
                 )
-            # if np.array(arr).shape == ():
-            #    tmp = [arr, 0]
-            # tmp = [arr ** i for i in range(1,5)]
-            # else:
-            #    tmp = [arr[0], 0]
-            # tmp = [arr[0] ** i for i in range(1, 5)]
-            # Y_psi.append(tmp)
+
         return np.array(Y_psi)
 
     def generate_data(self, d, p):

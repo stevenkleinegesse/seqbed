@@ -1,7 +1,13 @@
 import numpy as np
 from math import isinf
-import glmnet
 
+# This is needed to ignore scikit-learn's forced warnings
+def warn(*args, **kwargs):
+    pass
+import warnings
+warnings.warn = warn
+
+import glmnet
 
 class Inference:
 
@@ -124,7 +130,8 @@ class LFIRE(Inference):
         T = np.concatenate((t_t, t_m))
 
         # Define glmnet model
-        model = glmnet.LogitNet(n_splits=K, verbose=False, n_jobs=1, scoring="log_loss")
+        model = glmnet.LogitNet(
+            n_splits=K, verbose=False, n_jobs=1, scoring="log_loss")
         model.fit(Y, T)
 
         # collect coefficients and intercept
@@ -289,7 +296,8 @@ class LFIRE_SMC(Inference):
         T = np.concatenate((t_t, t_m))
 
         # Define glmnet model
-        model = glmnet.LogitNet(n_splits=K, verbose=False, n_jobs=1, scoring="log_loss")
+        model = glmnet.LogitNet(
+            n_splits=K, verbose=False, n_jobs=1, scoring="log_loss")
         model.fit(Y, T, sample_weight=weights_concat)
 
         # collect coefficients and intercept

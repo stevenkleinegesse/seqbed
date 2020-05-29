@@ -72,12 +72,6 @@ def get_GP_optimum(obj):
     space = Design_space(obj.domain, obj.constraints)
     bounds = space.get_bounds()
 
-    # Get function to optimize + gradients
-    # Also mask by everything that is allowed by the constraints
-    # fun = lambda d: fun_dfun(obj, space, d)[0]
-    # f_df = lambda d: fun_dfun(obj, space, d)
-    # def fun(d):
-    #    return fun_dfun(obj, space, d)[0]
     # Specify Optimizer --- L-BFGS
     optimizer = OptLbfgs(space.get_bounds(), maxiter=1000)
 
@@ -98,7 +92,8 @@ def get_GP_optimum(obj):
         # Rounding mixed things up, so need to look at neighbours
 
         # Compute neighbours to optimum
-        idx_comb = np.array(list(itertools.product([-1, 0, 1], repeat=len(bounds))))
+        idx_comb = np.array(
+            list(itertools.product([-1, 0, 1], repeat=len(bounds))))
         opt_combs = idx_comb + xtest
 
         # Evaluate
@@ -147,6 +142,7 @@ def resampling(params, weights, nsamples=1000, bounds=None):
     if len(params.shape) == 1:
         params = params.reshape(-1, 1)
 
+    # transform the parameter space
     PD = params.shape[-1]
     params_transf = list()
     for i in range(PD):
@@ -155,11 +151,12 @@ def resampling(params, weights, nsamples=1000, bounds=None):
         params_transf.append(p0_new)
     params_transf = np.array(params_transf).T
 
-    # params_transf = params / bounds
-
-    kdt = sklearn.neighbors.KDTree(params_transf, leaf_size=30, metric="euclidean")
+    # compute the nearest neighbours
+    kdt = sklearn.neighbors.KDTree(
+        params_transf, leaf_size=30, metric="euclidean")
     results = kdt.query(params_transf, k=2, return_distance=True)
 
+    # compute the covariance of parameters in the transformed space
     median_scaled = np.median(results[0][:, 1])
     emp_cov_med = np.identity(PD) * median_scaled ** 1
 
@@ -232,7 +229,7 @@ def resampling(params, weights, nsamples=1000, bounds=None):
     p_new = np.array(p_new)
     w_new = np.ones(len(p_new))
 
-    # transform the bounds
+    # transform the bounds back
     p_new_retransf = list()
     for i in range(PD):
         p0 = params.T[i]

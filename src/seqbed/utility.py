@@ -78,7 +78,10 @@ class MutualInformation(Utility):
         observations.
     """
 
-    def __init__(self, prior_samples, weights, simobj, evalmethod="lfire", smc=False):
+    def __init__(
+            self, prior_samples, weights, simobj, evalmethod="lfire",
+            smc=False
+    ):
 
         """
         Parameters
@@ -345,7 +348,8 @@ class DOptimality(Utility):
         return count
 
     def compute(
-        self, d, M=1000, epsilon=0.1, evaltype="robust", verbose=True, summary=True
+            self, d, M=1000, epsilon=0.1, evaltype="robust", verbose=True,
+            summary=True
     ):
 
         """
@@ -403,7 +407,8 @@ class DOptimality(Utility):
                 for i in range(len(self.weights)):
 
                     # Simulate data from prior at theta_i
-                    y_i = self.simobj.sample_data(d, self.prior_samples[i], num=M)
+                    y_i = self.simobj.sample_data(
+                        d, self.prior_samples[i], num=M)
 
                     # compute ABC likelihood
                     abc_like = self.abc_likelihood(
@@ -485,7 +490,8 @@ class DOptimality(Utility):
             for i in range(len(self.weights)):
 
                 # Simulate data from prior at theta_i
-                y_i = self.simobj.sample_data(d_opt, self.prior_samples[i], num=M)
+                y_i = self.simobj.sample_data(
+                    d_opt, self.prior_samples[i], num=M)
 
                 # compute ABC likelihood
                 abc_like = self.abc_likelihood(
